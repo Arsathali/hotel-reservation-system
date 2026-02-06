@@ -1,7 +1,10 @@
 package com.hotelreservation.service;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.hotelreservation.model.Hotel;
 import com.hotelreservation.repository.HotelReservationSystem;
@@ -10,8 +13,7 @@ import com.hotelreservation.repository.HotelReservationSystem;
  * HotelReservationService handles business logic related to
  * hotel price calculation and selection.
  *
- * UC-2:
- * Ability to find the cheapest hotel for a given date range
+ * Ability to find the cheapest hotels for a given date range
  * for a regular customer.
  */
 public class HotelReservationService {
@@ -24,39 +26,40 @@ public class HotelReservationService {
 
     /**
      * Finds the cheapest hotel for the given date range
-     * considering regular customer weekday rates only.
+     * considering regular customer weekday rates and weekends.
      *
      * Assumptions:
-     * - All dates are weekdays
      * - Rates are applied per day
      *
      * @param startDate start date of stay (inclusive)
      * @param endDate end date of stay (inclusive)
-     * @return cheapest Hotel for the given date range
+     * @return cheapest Hotels List for the given date range
      */
-    public Hotel findCheapestHotel(LocalDate starDate,LocalDate enDate){
+    public List<Hotel> findCheapestHotel(LocalDate starDate,LocalDate enDate){
 
-            long numberOfDays = ChronoUnit.DAYS.between(starDate, enDate)+1;
-
-            Hotel cheapestHotel = null;
+            List<Hotel> cheapestHotels = new ArrayList<>();
             int minCost = Integer.MAX_VALUE;
 
             for(Hotel hotel : system.getHotels()){
 
-                int totalCost =  (int) numberOfDays * hotel.getWeekdayRate();
+                int totalCost =  calculateTotalCost(hotel , starDate , enDate);
 
                 if(totalCost < minCost){
-                    cheapestHotel = hotel;
+                    cheapestHotels.clear();
+                    cheapestHotels.add(hotel);
                     minCost = totalCost;
+                }else if(totalCost == minCost){
+                    cheapestHotels.add(hotel);
                 }
 
             }
-            return cheapestHotel;
+            return cheapestHotels;
     }
+
 
     /**
      * Calculates total hotel cost for the given date range
-     * using regular weekday rates.
+     * using regular weekday rates and weekends.
      *
      * @param hotel selected hotel
      * @param startDate start date (inclusive)
@@ -64,6 +67,23 @@ public class HotelReservationService {
      * @return total cost for stay
      */
     public int calculateTotalCost(Hotel hotel , LocalDate  starDate, LocalDate enDate){
-        return ((int) ChronoUnit.DAYS.between(starDate, enDate)+1) * hotel.getWeekdayRate();
+        
+        int totalCost = 0;
+
+        LocalDate currDate = starDate;
+
+        while(!currDate.isAfter(enDate)){
+
+            DayOfWeek dayOfWeek = currDate.getDayOfWeek();
+
+            if (dayOfWeek == DayOfWeek.SATURDAY || dayOfWeek == DayOfWeek.SUNDAY) {
+                totalCost += hotel.getWeekendRate();
+            }else{
+                totalCost += hotel.getWeekdayRate();
+            }
+
+            currDate = currDate.plusDays(1);
+        }
+        return totalCost;
     }
 }

@@ -1,6 +1,7 @@
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 import com.hotelreservation.model.Hotel;
 import com.hotelreservation.repository.HotelReservationSystem;
@@ -8,7 +9,8 @@ import com.hotelreservation.service.HotelReservationService;
 
 /**
  * HotelReservation is the entry point of the application.
- * Ability to add weekday and weekend rates for hotels. UC-3 logic.
+ * Ability to find the cheapest Hotel for a 
+ * given Date Range based on weekday and weakend. UC-4 logic.
  */
 public class HotelReservation {
 
@@ -26,13 +28,17 @@ public class HotelReservation {
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("ddMMMyyyy");
 
-        LocalDate starDate = LocalDate.parse("10Sep2020",formatter);
-        LocalDate enDate = LocalDate.parse("12Sep2020",formatter);
+        LocalDate starDate = LocalDate.parse("11Sep2020",formatter);
+        LocalDate endDate = LocalDate.parse("12Sep2020",formatter);
 
-        Hotel cheapestHotel = service.findCheapestHotel(starDate, enDate);
+        List<Hotel> cheapestHotels = service.findCheapestHotel(starDate, endDate);
 
-        int totalCost = service.calculateTotalCost(cheapestHotel, starDate, enDate);
+        int totalCost = service.calculateTotalCost(cheapestHotels.get(0), starDate, endDate);
 
-        System.out.println("Cheapest Hotel: " + cheapestHotel.getName() + ", Total Rates: $" + totalCost);
+        System.out.print("Cheapest Hotel(s): ");
+        for(Hotel hotel : cheapestHotels){
+            System.out.print(hotel.getName()+" ");
+        }
+        System.out.print(": "+totalCost);
     }
 }
