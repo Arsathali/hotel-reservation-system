@@ -8,7 +8,7 @@ import com.hotelreservation.service.HotelReservationService;
 
 /**
  * HotelReservation is the entry point of the application.
- * Displays welcome message and invokes UC-2 logic.
+ * Ability to add weekday and weekend rates for hotels. UC-3 logic.
  */
 public class HotelReservation {
 
@@ -18,9 +18,9 @@ public class HotelReservation {
 
         HotelReservationSystem system = new HotelReservationSystem();
 
-        system.addHotels(new Hotel("LakeWood", 110));
-        system.addHotels(new Hotel("Bridgewood", 150));
-        system.addHotels(new Hotel("Ridgewood", 220));
+        system.addHotels(new Hotel("LakeWood", 110, 90));
+        system.addHotels(new Hotel("Bridgewood", 150, 50));
+        system.addHotels(new Hotel("Ridgewood", 220, 150));
 
         HotelReservationService service = new HotelReservationService(system);
 
@@ -33,6 +33,6 @@ public class HotelReservation {
 
         int totalCost = service.calculateTotalCost(cheapestHotel, starDate, enDate);
 
-         System.out.println("Cheapest Hotel: " + cheapestHotel.getName() + ", Total Rates: $" + totalCost);
+        System.out.println("Cheapest Hotel: " + cheapestHotel.getName() + ", Total Rates: $" + totalCost);
     }
 }
