@@ -25,7 +25,7 @@ public class HotelReservationService {
     }
 
     /**
-     * Finds the cheapest hotel for the given date range
+     * Finds the cheapest hotel and well rated hotel for the given date range
      * considering regular customer weekday rates and weekends.
      *
      * Assumptions:
@@ -33,11 +33,11 @@ public class HotelReservationService {
      *
      * @param startDate start date of stay (inclusive)
      * @param endDate end date of stay (inclusive)
-     * @return cheapest Hotels List for the given date range
+     * @return cheapest Hotels and best rated for the given date range
      */
-    public List<Hotel> findCheapestHotel(LocalDate starDate,LocalDate enDate){
+    public Hotel findCheapestHotel(LocalDate starDate,LocalDate enDate){
 
-            List<Hotel> cheapestHotels = new ArrayList<>();
+            Hotel bestHotel = null;
             int minCost = Integer.MAX_VALUE;
 
             for(Hotel hotel : system.getHotels()){
@@ -45,15 +45,14 @@ public class HotelReservationService {
                 int totalCost =  calculateTotalCost(hotel , starDate , enDate);
 
                 if(totalCost < minCost){
-                    cheapestHotels.clear();
-                    cheapestHotels.add(hotel);
+                    bestHotel = hotel;
                     minCost = totalCost;
-                }else if(totalCost == minCost){
-                    cheapestHotels.add(hotel);
+                }else if(totalCost == minCost && hotel.getRating() > bestHotel.getRating()){
+                    bestHotel = hotel;
                 }
 
             }
-            return cheapestHotels;
+            return bestHotel;
     }
 
 
