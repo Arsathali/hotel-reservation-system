@@ -9,8 +9,7 @@ import com.hotelreservation.service.HotelReservationService;
 
 /**
  * HotelReservation is the entry point of the application.
- * Ability to find the cheapest Hotel for a 
- * given Date Range based on weekday and weakend. UC-4 logic.
+ * Ability to add ratings to each Hotel. UC-5 logic.
  */
 public class HotelReservation {
 
@@ -20,9 +19,9 @@ public class HotelReservation {
 
         HotelReservationSystem system = new HotelReservationSystem();
 
-        system.addHotels(new Hotel("LakeWood", 110, 90));
-        system.addHotels(new Hotel("Bridgewood", 150, 50));
-        system.addHotels(new Hotel("Ridgewood", 220, 150));
+        system.addHotels(new Hotel("LakeWood", 110, 90,3));
+        system.addHotels(new Hotel("Bridgewood", 150, 50, 4));
+        system.addHotels(new Hotel("Ridgewood", 220, 150, 5));
 
         HotelReservationService service = new HotelReservationService(system);
 
@@ -39,6 +38,6 @@ public class HotelReservation {
         for(Hotel hotel : cheapestHotels){
             System.out.print(hotel.getName()+" ");
         }
-        System.out.print(": "+totalCost);
+        System.out.print("Total Cost: "+totalCost);
     }
 }
