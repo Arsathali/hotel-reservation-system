@@ -7,8 +7,8 @@ import com.hotelreservation.service.HotelReservationService;
 
 /**
  * HotelReservation is the entry point of the application.
- * Ability to find the  best rated 
- * Hotel for a given Date Range. UC-7 logic.
+ * Ability to add special rates for 
+ * reward customers as a Part of loyalty program. UC-8 logic.
  */
 public class HotelReservation {
 
@@ -18,9 +18,9 @@ public class HotelReservation {
 
         HotelReservationSystem system = new HotelReservationSystem();
 
-        system.addHotels(new Hotel("LakeWood", 110, 90,3));
-        system.addHotels(new Hotel("Bridgewood", 150, 50, 4));
-        system.addHotels(new Hotel("Ridgewood", 220, 150, 5));
+        system.addHotels(new Hotel("LakeWood", 110, 90, 3,80, 80 ));
+        system.addHotels(new Hotel("Bridgewood", 150, 50, 4, 110, 50));
+        system.addHotels(new Hotel("Ridgewood", 220, 150, 5,100, 40));
         System.out.println();
 
         HotelReservationService service = new HotelReservationService(system);
