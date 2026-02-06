@@ -7,8 +7,8 @@ import com.hotelreservation.service.HotelReservationService;
 
 /**
  * HotelReservation is the entry point of the application.
- * Ability to find the cheapest best rated 
- * Hotel for a given Date Range. UC-5 logic.
+ * Ability to find the  best rated 
+ * Hotel for a given Date Range. UC-7 logic.
  */
 public class HotelReservation {
 
@@ -31,11 +31,13 @@ public class HotelReservation {
         LocalDate endDate = LocalDate.parse("12Sep2020",formatter);
 
         Hotel bestHotel = service.findCheapestHotel(starDate, endDate);
-
         int totalCost = service.calculateTotalCost(bestHotel, starDate, endDate);
 
-        System.out.println("Cheapest and best Rated Hotel is: " + bestHotel.getName());
+        Hotel bestRatedHotel = service.findBestRatedHotel();
+        int totalCostOfBestRated = service.calculateTotalCost(bestRatedHotel,starDate, endDate);
+
+        System.out.println("Cheapest and best Rated Hotel is: " + bestHotel.getName() + " With total cost of : "+totalCost);
         
-        System.out.print("Total Cost: "+ totalCost);
+        System.out.println("Best Rated Hotel is: " + bestRatedHotel.getName() + " With total cost of : "+totalCostOfBestRated);
     }
 }

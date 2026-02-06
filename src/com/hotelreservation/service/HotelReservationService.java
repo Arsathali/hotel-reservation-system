@@ -55,6 +55,29 @@ public class HotelReservationService {
             return bestHotel;
     }
 
+    /**
+     * Finds the Best Rated hotel  for the given date range
+     * considering regular customer weekday rates and weekends.
+     *
+     * Assumptions:
+     * - Rates are applied per day
+     *
+     * @return best rated Hotels for the given date range
+     */
+    public Hotel findBestRatedHotel() {
+
+        Hotel bestHotel = null;
+        int highestRating = 0;
+
+        for (Hotel hotel : system.getHotels()) {
+            if (hotel.getRating() > highestRating) {
+                highestRating = hotel.getRating();
+                bestHotel = hotel;
+            }
+        }
+        return bestHotel;
+    }
+
 
     /**
      * Calculates total hotel cost for the given date range
