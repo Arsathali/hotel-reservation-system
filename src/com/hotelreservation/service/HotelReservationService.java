@@ -37,32 +37,15 @@ public class HotelReservationService {
      */
     public Hotel findCheapestBestHotelForRegularCustomer(LocalDate startDate,LocalDate endDate) throws HotelReservationException{
 
-            if (startDate == null || endDate == null) {
-                throw new HotelReservationException("Invalid date range");
-            }
-            
-            Hotel bestHotel = null;
-            int minCost = Integer.MAX_VALUE;
-
-            for(Hotel hotel : system.getHotels()){
-
-                int totalCost =  calculateTotalCostForRegularCustomer(hotel , startDate , endDate);
-
-                if(totalCost < minCost){
-                    bestHotel = hotel;
-                    minCost = totalCost;
-                }else if(totalCost == minCost && hotel.getRating() > bestHotel.getRating()){
-                    bestHotel = hotel;
-                }
-
-            }
-
-            
-            if (bestHotel == null) {
-                throw new HotelReservationException(
-                    "No suitable hotel found for given date range"
-                );
-            }
+            Hotel bestHotel = system.getHotels().stream().min(
+                Comparator.comparingInt(
+                    hotel -> calculateTotalCostForRegularCustomer((Hotel)hotel, startDate, endDate)
+                ).thenComparing(
+                     (h1, h2) -> Integer.compare(((Hotel) h2).getRating(), ((Hotel) h1).getRating()
+                )
+            )).orElseThrow(
+                () -> new HotelReservationException("No suitable hotel found")
+            );
             return bestHotel;
     }
 
