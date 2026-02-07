@@ -2,10 +2,8 @@ package com.hotelreservation.service;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.List;
 
+import com.hotelreservation.exception.HotelReservationException;
 import com.hotelreservation.model.Hotel;
 import com.hotelreservation.repository.HotelReservationSystem;
 
@@ -34,15 +32,20 @@ public class HotelReservationService {
      * @param startDate start date of stay (inclusive)
      * @param endDate end date of stay (inclusive)
      * @return cheapest Hotels and best rated for the given date range
+     * @throws HotelReservationException 
      */
-    public Hotel findCheapestHotel(LocalDate starDate,LocalDate enDate){
+    public Hotel findCheapestBestHotelForRegularCustomer(LocalDate startDate,LocalDate endDate) throws HotelReservationException{
 
+            if (startDate == null || endDate == null) {
+                throw new HotelReservationException("Invalid date range");
+            }
+            
             Hotel bestHotel = null;
             int minCost = Integer.MAX_VALUE;
 
             for(Hotel hotel : system.getHotels()){
 
-                int totalCost =  calculateTotalCost(hotel , starDate , enDate);
+                int totalCost =  calculateTotalCostForRegularCustomer(hotel , startDate , endDate);
 
                 if(totalCost < minCost){
                     bestHotel = hotel;
@@ -51,6 +54,11 @@ public class HotelReservationService {
                     bestHotel = hotel;
                 }
 
+            }
+            if (bestHotel == null) {
+                throw new HotelReservationException(
+                    "No suitable hotel found for given date range"
+                );
             }
             return bestHotel;
     }
@@ -63,8 +71,9 @@ public class HotelReservationService {
      * - Rates are applied per day
      *
      * @return best rated Hotels for the given date range
+     * @throws HotelReservationException 
      */
-    public Hotel findBestRatedHotel() {
+    public Hotel findBestRatedHotel() throws HotelReservationException {
 
         Hotel bestHotel = null;
         int highestRating = 0;
@@ -74,6 +83,12 @@ public class HotelReservationService {
                 highestRating = hotel.getRating();
                 bestHotel = hotel;
             }
+        }
+
+        if (bestHotel == null) {
+                throw new HotelReservationException(
+                    "No suitable hotel found"
+                );
         }
         return bestHotel;
     }
@@ -88,7 +103,7 @@ public class HotelReservationService {
      * @param endDate end date (inclusive)
      * @return total cost for stay
      */
-    public int calculateTotalCost(Hotel hotel , LocalDate  starDate, LocalDate enDate){
+    public int calculateTotalCostForRegularCustomer(Hotel hotel , LocalDate  starDate, LocalDate enDate){
         
         int totalCost = 0;
 
@@ -108,4 +123,78 @@ public class HotelReservationService {
         }
         return totalCost;
     }
+
+
+    /*
+    * Finds the cheapest hotel for a Reward customer within
+    * the given date range.
+    *
+    * If multiple hotels have the same minimum total cost,
+    * the hotel with the highest rating is selected.
+    *
+    * This method strictly follows UC-10 requirements and
+    * does not modify logic from earlier use cases.
+    *
+    * @param hotels     list of available hotels
+    * @param startDate  reservation start date
+    * @param endDate    reservation end date
+    * @return           cheapest best-rated hotel for Reward customer
+    */
+     public Hotel findCheapestBestHotelForRewardCustomer(LocalDate starDate,LocalDate enDate){
+
+            Hotel bestHotel = null;
+            int minCost = Integer.MAX_VALUE;
+
+            for(Hotel hotel : system.getHotels()){
+
+                int totalCost =  calculateTotalCostForRewardCustomer(hotel , starDate , enDate);
+
+                if(totalCost < minCost){
+                    bestHotel = hotel;
+                    minCost = totalCost;
+                }else if(totalCost == minCost && hotel.getRating() > bestHotel.getRating()){
+                    bestHotel = hotel;
+                }
+
+            }
+            return bestHotel;
+    }
+
+    /*
+    * Calculates the total reservation cost for a Reward customer
+    * for the specified date range.
+    *
+    * Weekday and weekend are identified using Java 8
+    * LocalDate and DayOfWeek APIs.
+    *
+    * Reward customer weekday and weekend rates are applied
+    * based on the day type.
+    *
+    * @param hotel      hotel for which cost is calculated
+    * @param startDate  reservation start date
+    * @param endDate    reservation end date
+    * @return           total cost for Reward customer
+    */
+    public int calculateTotalCostForRewardCustomer(Hotel hotel , LocalDate  starDate, LocalDate enDate){
+        
+        int totalCost = 0;
+
+        LocalDate currDate = starDate;
+
+        while(!currDate.isAfter(enDate)){
+
+            DayOfWeek dayOfWeek = currDate.getDayOfWeek();
+
+            if (dayOfWeek == DayOfWeek.SATURDAY || dayOfWeek == DayOfWeek.SUNDAY) {
+                totalCost += hotel.getRewardWeekendRates();
+            }else{
+                totalCost += hotel.getRewardWeekdayRate();
+            }
+
+            currDate = currDate.plusDays(1);
+        }
+        return totalCost;
+    }
+
+
 }
