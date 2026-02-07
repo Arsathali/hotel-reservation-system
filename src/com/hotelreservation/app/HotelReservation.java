@@ -7,8 +7,6 @@ import com.hotelreservation.service.HotelReservationService;
 
 /**
  * HotelReservation is the entry point of the application.
- * Ability to add special rates for 
- * reward customers as a Part of loyalty program. UC-8 logic.
  */
 public class HotelReservation {
 
