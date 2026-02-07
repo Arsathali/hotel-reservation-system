@@ -1,16 +1,20 @@
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+
+import com.hotelreservation.exception.HotelReservationException;
+import com.hotelreservation.model.CustomerType;
 import com.hotelreservation.model.Hotel;
 import com.hotelreservation.repository.HotelReservationSystem;
 import com.hotelreservation.service.HotelReservationService;
+import com.hotelreservation.service.InputValidator;
 
 /**
  * HotelReservation is the entry point of the application.
  */
 public class HotelReservation {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws HotelReservationException {
         
         System.out.println("Welcome to Hotel Reservation Program");
 
@@ -25,17 +29,19 @@ public class HotelReservation {
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("ddMMMyyyy");
 
-        LocalDate starDate = LocalDate.parse("11Sep2020",formatter);
+        LocalDate startDate = LocalDate.parse("11Sep2020",formatter);
         LocalDate endDate = LocalDate.parse("12Sep2020",formatter);
 
-        Hotel bestHotel = service.findCheapestHotel(starDate, endDate);
-        int totalCost = service.calculateTotalCost(bestHotel, starDate, endDate);
+        //validates the input
+        InputValidator.validateInput(CustomerType.REWARD, startDate, endDate);
 
-        Hotel bestRatedHotel = service.findBestRatedHotel();
-        int totalCostOfBestRated = service.calculateTotalCost(bestRatedHotel,starDate, endDate);
+        Hotel hotel = service.findCheapestBestHotelForRewardCustomer(startDate, endDate);
+        int totalCost = service.calculateTotalCostForRewardCustomer(hotel, startDate, endDate);
 
-        System.out.println("Cheapest and best Rated Hotel is: " + bestHotel.getName() + " With total cost of : "+totalCost);
-        
-        System.out.println("Best Rated Hotel is: " + bestRatedHotel.getName() + " With total cost of : "+totalCostOfBestRated);
+        System.out.println(
+                    hotel.getName() +
+                    ", Rating: " + hotel.getRating() +
+                    " and Total Rates: $" + totalCost
+        );
     }
 }
