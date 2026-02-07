@@ -2,6 +2,7 @@ package com.hotelreservation.service;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.util.Comparator;
 
 import com.hotelreservation.exception.HotelReservationException;
 import com.hotelreservation.model.Hotel;
@@ -55,6 +56,8 @@ public class HotelReservationService {
                 }
 
             }
+
+            
             if (bestHotel == null) {
                 throw new HotelReservationException(
                     "No suitable hotel found for given date range"
@@ -140,23 +143,17 @@ public class HotelReservationService {
     * @param endDate    reservation end date
     * @return           cheapest best-rated hotel for Reward customer
     */
-     public Hotel findCheapestBestHotelForRewardCustomer(LocalDate starDate,LocalDate enDate){
+     public Hotel findCheapestBestHotelForRewardCustomer(LocalDate starDate,LocalDate enDate) throws HotelReservationException {
 
-            Hotel bestHotel = null;
-            int minCost = Integer.MAX_VALUE;
-
-            for(Hotel hotel : system.getHotels()){
-
-                int totalCost =  calculateTotalCostForRewardCustomer(hotel , starDate , enDate);
-
-                if(totalCost < minCost){
-                    bestHotel = hotel;
-                    minCost = totalCost;
-                }else if(totalCost == minCost && hotel.getRating() > bestHotel.getRating()){
-                    bestHotel = hotel;
-                }
-
-            }
+            Hotel bestHotel = system.getHotels().stream().min(
+                Comparator.comparingInt(
+                    hotel -> calculateTotalCostForRewardCustomer((Hotel)hotel, starDate, enDate)
+                ).thenComparing(
+                     (h1, h2) -> Integer.compare(((Hotel) h2).getRating(), ((Hotel) h1).getRating()
+                )
+            )).orElseThrow(
+                () -> new HotelReservationException("No suitable hotel found")
+            );
             return bestHotel;
     }
 

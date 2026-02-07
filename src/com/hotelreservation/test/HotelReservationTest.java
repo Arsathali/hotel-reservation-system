@@ -50,7 +50,7 @@ public class HotelReservationTest {
     // ---------------- UC: Reward Customer Cost ----------------
 
     @Test
-    public void givenDateRange_whenRewardCustomer_shouldCalculateCorrectTotalCost() {
+    public void givenDateRange_whenRewardCustomer_shouldCalculateCorrectTotalCost() throws HotelReservationException {
         LocalDate start = LocalDate.parse("11Sep2020", formatter);
         LocalDate end   = LocalDate.parse("12Sep2020", formatter);
 

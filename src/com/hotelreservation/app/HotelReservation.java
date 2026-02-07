@@ -33,7 +33,7 @@ public class HotelReservation {
         LocalDate endDate = LocalDate.parse("12Sep2020",formatter);
 
         //validates the input
-        InputValidator.validateInput(CustomerType.REWARD, startDate, endDate);
+        InputValidator.validateInput(CustomerType.REWARD, startDate.toString(), endDate.toString());
 
         Hotel hotel = service.findCheapestBestHotelForRewardCustomer(startDate, endDate);
         int totalCost = service.calculateTotalCostForRewardCustomer(hotel, startDate, endDate);
